@@ -1,0 +1,92 @@
+[
+    {
+        "infector": 64387,
+        "infectee": 64465,
+        "date": "26/06/2021"
+    },
+    {
+        "infector": 64387,
+        "infectee": 64467,
+        "date": "26/06/2021"
+    },
+    {
+        "infector": 64387,
+        "infectee": 64414,
+        "date": "24/06/2021"
+    },
+    {
+        "infector": 64387,
+        "infectee": 64415,
+        "date": "24/06/2021"
+    },
+    {
+        "infector": 64387,
+        "infectee": 64416,
+        "date": "24/06/2021"
+    },
+    {
+        "infector": 64387,
+        "infectee": 64437,
+        "date": "24/06/2021"
+    },
+    {
+        "infector": 64349,
+        "infectee": 64387,
+        "date": "22/06/2021"
+    },
+    {
+        "infector": 64349,
+        "infectee": 64408,
+        "date": "23/06/2021"
+    },
+    {
+        "infector": 64349,
+        "infectee": 64397,
+        "date": "23/06/2021"
+    },
+    {
+        "infector": 64413,
+        "infectee": 64442,
+        "date": "25/06/2021"
+    },
+    {
+        "infector": 64413,
+        "infectee": 64443,
+        "date": "25/06/2021"
+    },
+    {
+        "infector": 64413,
+        "infectee": 64476,
+        "date": "26/06/2021"
+    },
+    {
+        "infector": 64413,
+        "infectee": 64462,
+        "date": "26/06/2021"
+    },
+    {
+        "infector": 64413,
+        "infectee": 64489,
+        "date": "27/06/2021"
+    },
+    {
+        "infector": 64413,
+        "infectee": 64484,
+        "date": "27/06/2021"
+    },
+    {
+        "infector": 64476,
+        "infectee": 64487,
+        "date": "27/06/2021"
+    },
+    {
+        "infector": 64462,
+        "infectee": 64486,
+        "date": "27/06/2021"
+    },
+    {
+        "infector": 64462,
+        "infectee": 64490,
+        "date": "27/06/2021"
+    }
+]

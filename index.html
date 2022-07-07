@@ -1,0 +1,193 @@
+<!-- Reference from https://d3-graph-gallery.com/graph/network_basic.html and tutorial -->
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+
+    
+  </style>
+</head>
+<body>
+<h1>Covid Force Diagram</h1>
+<button id="button_gender">By Gender</button>
+<button id="button_vac">By Vaccination Status</button>
+<div id="forcemap_div"></div>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3-legend/2.25.6/d3-legend.min.js"></script>
+
+<script>
+
+let width = 1000, height = 500;
+
+let svg = d3.select("#forcemap_div")
+    .append("svg")
+    .attr("id", "forcemap_svg")
+    .attr("viewBox", "0 0 " + width + " " + height)
+
+// Load external data
+Promise.all([d3.json("links-sample.json"), d3.json("cases-sample.json")]).then(data => {
+
+// Data preprocessing
+    data[0].forEach(e => {
+        e.source = e.infector;
+        e.target = e.infectee;
+    });
+    
+console.log(data[0]); //links
+console.log(data[1]); //cases
+
+//Define color scale
+var vacColorScale =d3.scaleOrdinal()
+  .domain(['no','partial (1 dose)','yes (2 doses)'])
+  .range(["red","yellow","green"]);
+console.log(vacColorScale('yes (2 doses)'))
+var genderColorScale =d3.scaleOrdinal()
+  .domain(['male','female'])
+  .range(["blue","pink"]);
+
+
+// Legend
+var genderLegend = d3.legendColor()
+  .shape("path", d3.symbol().type(d3.symbolCircle).size(150)())
+  .shapePadding(10)
+  //use cellFilter to hide the "e" cell
+  .cellFilter(function(d){ return d.label !== "e" })
+  .scale(genderColorScale);
+
+var vacLegend = d3.legendColor()
+  .shape("path", d3.symbol().type(d3.symbolCircle).size(150)())
+  .shapePadding(10)
+  //use cellFilter to hide the "e" cell
+  .cellFilter(function(d){ return d.label !== "e" })
+  .scale(vacColorScale);
+
+//Append initial legend
+svg.append("g")
+  .attr("class", "legendSequential")
+  .attr("transform", "translate(20,20)");
+svg.select(".legendSequential")
+    .call(genderLegend);
+
+//Tooltip HTML
+const Tooltip = d3
+    .select("#forcemap_div")
+    .append("div")
+      .style("position", "absolute")
+      .style("visibility", "hidden")
+      .style("background-color", "white")
+      .style("border", "solid")
+      .style("border-width", "1px")
+      .style("border-radius", "5px")
+      .style("padding", "10px")
+
+// Mouseover functions
+let mouseOver = function(event, d) {
+  Tooltip
+    .html("Age: "+ d.age+"<br>"+"Gender: "+ d.gender+"<br>"+"Nationality: "+ d.nationality+"<br>"+ "Occupation:" + d.occupation +"<br>"+"Vaccination: "+d.vaccinated).style("visibility", "visible")
+    .style("left", event.pageX + 10 + "px");
+    d3.select(this)
+      .style("stroke", "black")
+      .style("opacity", 1)
+  }
+  let mouseMove = function (event,d) {
+    Tooltip
+          .style("top", event.pageY - 10 + "px")
+          .style("left", event.pageX + 10 + "px");
+          }
+  let mouseLeave = function(event, d) {
+    Tooltip.html(``).style("visibility", "hidden")
+      d3.select(this)
+      .transition()
+      .duration(200)
+      .style("stroke", "transparent")
+  }
+
+//Draw circle (cases)
+let node = svg.append("g")
+    .attr("id","nodes")
+    .selectAll("circle")
+    .data(data[1])
+    .enter()
+        .append("circle")
+        .attr("r", 15)
+        .style("fill",d=> genderColorScale(d.gender)
+        )
+    .call(d3.drag()
+    .on("start", dragstarted)
+    .on("drag", dragged)
+    .on("end", dragended))
+    // some mouse interaction
+    .on("mouseover", mouseOver)
+    .on("mousemove",mouseMove)
+    .on("mouseleave", mouseLeave); 
+//Draw links
+let linkpath = svg.append("g")
+    .attr("id", "links")
+    .selectAll("path")
+    .data(data[0])
+    .enter()
+        .append("line")
+        .attr("fill", "none")
+        .attr("stroke", "black");
+        
+// force simulation
+let simulation = d3.forceSimulation()
+    .nodes(data[1])
+    .force("x", d3.forceX().strength(0.5).x(width / 2))
+    .force("y", d3.forceY().strength(0.5).y(height / 2))
+    .force("charge", d3.forceManyBody().strength(-1000))
+    .force("collide", d3.forceCollide().strength(0.1).radius(-15))
+    .force("linkpath", d3.forceLink()                           
+            .id(function(d) { return d.id; })                   
+            .links(data[0])                                   
+      )  
+      .on("tick", ticked);
+
+function ticked() {
+    linkpath
+        .attr("x1", d=> d.source.x )
+        .attr("y1", d=> d.source.y)
+        .attr("x2", d=> d.target.x)
+        .attr("y2", d=> d.target.y);
+    node
+         .attr("cx", function (d) { return d.x+6; })
+         .attr("cy", function(d) { return d.y-6; });
+  }
+
+// Dragging
+function dragstarted(event, d) {
+  if (!event.active) simulation.alphaTarget(0.3).restart();
+  d.fx = d.x;
+  d.fy = d.y;
+}
+
+function dragged(event, d) {
+  d.fx = event.x;
+  d.fy = event.y;
+}
+
+function dragended(event, d) {
+  if (!event.active) simulation.alphaTarget(0);
+  d.fx = null;
+  d.fy = null;
+}
+
+// Logic to change color based on category
+d3.select("#button_gender").on("click", function() {
+  node
+    .style("fill",d=> genderColorScale(d.gender))
+  svg.select(".legendSequential")
+    .call(genderLegend);
+})
+d3.select("#button_vac").on("click", function() {
+  node
+    .style("fill",d=> vacColorScale(d.vaccinated))
+    svg.select(".legendSequential")
+    .call(vacLegend);
+})
+})
+</script>
+
+</body>
+</html>
