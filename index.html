@@ -1,4 +1,4 @@
-<!-- Reference from https://d3-graph-gallery.com/graph/network_basic.html , https://observablehq.com/@harrylove/draw-an-arrow-between-circles-with-d3-links and force tutorial -->
+<!-- Reference from https://d3-graph-gallery.com/graph/network_basic.html , https://observablehq.com/@harrylove/draw-an-arrow-between-circles-with-d3-links, https://d3-legend.susielu.com/#color-ordinal and force tutorial -->
 <!DOCTYPE html>
 <html>
 <head>
@@ -34,14 +34,14 @@ Promise.all([d3.json("links-sample.json"), d3.json("cases-sample.json")]).then(d
         e.target = e.infectee;
     });
     
-console.log(data[0]); //links
-console.log(data[1]); //cases
+//console.log(data[0]); //links
+//console.log(data[1]); //cases
 
 //Define color scale
 var vacColorScale =d3.scaleOrdinal()
   .domain(['no','partial (1 dose)','yes (2 doses)'])
   .range(["red","yellow","green"]);
-console.log(vacColorScale('yes (2 doses)'))
+//console.log(vacColorScale('yes (2 doses)'))
 var genderColorScale =d3.scaleOrdinal()
   .domain(['male','female'])
   .range(["blue","pink"]);
